@@ -64,7 +64,6 @@
 
   .btn-danger {
     background-color: rgb(136, 4, 4);
-    border: 1px solid black;
   }
 
   .btn-menu {

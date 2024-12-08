@@ -1,5 +1,6 @@
 <script>
   import heroImage from "$assets/hero.png"
+  import Button from "./Button.svelte";
 </script>
 
 <section class="default-margin hero">
@@ -12,7 +13,7 @@
     <h4 class="mb-s">
       Our app makes managing your connection a joy
     </h4>
-    <button>Sign Up</button>
+    <Button href="/register">Sign Up</Button>
   </div>
   <img src="{heroImage}" alt="" class="hero-image">
 </section>
