@@ -1,4 +1,5 @@
 import { type SupabaseClient, type User, type Session } from "@supabase/supabase-js";
+import { redirect } from "@sveltejs/kit";
 import { setContext, getContext } from "svelte";
 
 interface UserStateProps {
