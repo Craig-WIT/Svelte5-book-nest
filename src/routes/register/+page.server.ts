@@ -1,9 +1,11 @@
-import { fail, redirect, type Actions } from "@sveltejs/kit";
-import { createClient } from "@supabase/supabase-js";
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public";
+import { fail, redirect } from "@sveltejs/kit";
 
 interface ReturnObject {
     success: boolean;
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+    name: string;
     errors: string [];
 }
 export const actions = {
@@ -17,6 +19,10 @@ export const actions = {
 
         const returnObject: ReturnObject = {
             success: true,
+            email,
+            name,
+            password,
+            passwordConfirmation,
             errors: [],
         }
 
@@ -49,12 +55,11 @@ export const actions = {
         if(error || !data.user){
             console.log("There has been an error");
             console.log(error);
-            returnObject.success = true;
+            returnObject.success = false;
             return fail(400, returnObject as any)
         }
 
         redirect(303, "private/dashboard")
 
-        return returnObject
     }
 }

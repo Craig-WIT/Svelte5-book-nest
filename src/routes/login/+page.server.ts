@@ -1,11 +1,15 @@
-import type { Actions } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 
 interface ReturnObject {
     success: boolean;
+    email: string;
+    password: string;
+    passwordConfirmation?: never;
+    name?: never;
     errors: string [];
 }
 export const actions = {
-    default: async ({request}) => {
+    default: async ({request, locals:{supabase}}) => {
         const formData = await request.formData();
 
         const email = formData.get("email") as string
@@ -13,6 +17,8 @@ export const actions = {
 
         const returnObject: ReturnObject = {
             success: true,
+            email,
+            password,
             errors: [],
         }
 
@@ -29,8 +35,18 @@ export const actions = {
             return returnObject
         }
 
-        
+        const {data, error} = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        })
 
-        return returnObject
+        if(error || !data.user){
+            console.log("There has been an error");
+            console.log(error);
+            returnObject.success = false;
+            return fail(400, returnObject as any)
+        }
+
+        redirect(303, "private/dashboard")
     }
 }
