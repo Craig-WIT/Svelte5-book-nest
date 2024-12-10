@@ -3,8 +3,8 @@
   import Button from "./Button.svelte";
 </script>
 
-<section class="default-margin hero">
-  <div class="hero-text">
+<section class="default-margin flex justify-between items-center mt-24 mb-20">
+  <div class="hero-text flex flex-col items-start pr-12">
     <h1>Book Nest</h1>
     <h3>Your personal book library</h3>
     <h4 class="mt-l">
@@ -15,11 +15,11 @@
     </h4>
     <Button href="/register">Sign Up</Button>
   </div>
-  <img src="{heroImage}" alt="" class="hero-image">
+  <img src="{heroImage}" alt="" class="w-2/5">
 </section>
 
 <style>
-  .hero {
+  /* .hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -29,13 +29,13 @@
 
   .hero-image {
     width: 40%;
-  }
+  } */
 
   .hero-text {
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start; */
     width: 55%;
-    padding-right: 50px;
+    /* padding-right: 50px; */
   }
 </style>
