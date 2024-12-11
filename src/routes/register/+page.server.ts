@@ -55,9 +55,19 @@ export const actions = {
         if(error || !data.user){
             console.log("There has been an error");
             console.log(error);
+            returnObject.errors.push(error?.message as string)
             returnObject.success = false;
             return fail(400, returnObject as any)
         }
+
+        const userId = data.user.id;
+
+        await supabase.from("user_names").insert([
+            {
+                user_id: userId,
+                name: name,
+            }
+        ])
 
         redirect(303, "private/dashboard")
 
