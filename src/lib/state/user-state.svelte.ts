@@ -1,7 +1,7 @@
 import { goto } from "$app/navigation";
 import { type SupabaseClient, type User, type Session } from "@supabase/supabase-js";
-import { redirect } from "@sveltejs/kit";
 import { setContext, getContext } from "svelte";
+import type { Database } from "$lib/types/database.types";
 
 interface UserStateProps {
     session: Session | null;
@@ -9,10 +9,25 @@ interface UserStateProps {
     user: User | null;
 }
 
+interface Book {
+    author: string | null
+    cover_image: string | null
+    created_at: string
+    description: string | null
+    finished_reading_on: string | null
+    genre: string | null
+    id: number
+    rating: number | null
+    started_reading_on: string | null
+    title: string | null
+    user_id: string | null
+}
+
 export class UserState {
     session = $state<Session | null>(null);
-    supabase = $state<SupabaseClient | null>(null);
+    supabase = $state<SupabaseClient<Database> | null>(null);
     user = $state<User | null>(null);
+    allBooks = $state<Book[]>([]);
 
     constructor(data:UserStateProps) {
         this.updateState(data) 
@@ -22,6 +37,30 @@ export class UserState {
         this.session = data.session;
         this.supabase = data.supabase;
         this.user = data.user;
+        this.fetchUserData();
+    }
+
+    async fetchUserData() {
+        if(!this.user || !this.supabase) {
+            return;
+        }
+
+        const userId = this.user.id;
+
+        const { data,error } =  await this.supabase
+        .from("books")
+        .select("*")
+        .eq("user_id", userId)
+
+        if (error) {
+            console.log("Error fetching user books");
+            console.log(error);
+            return
+        }
+
+        console.log("This is all books: " + JSON.stringify(data))
+
+        this.allBooks = data;
     }
 
     async logout() {

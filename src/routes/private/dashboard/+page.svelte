@@ -1,3 +1,25 @@
+<!-- <script lang="ts">
+  import { getUserState } from "$lib/state/user-state.svelte";
+
+  let userContext = getUserState();
+
+  console.log("This is userContext" + JSON.stringify(userContext))
+
+  let { allBooks} = $derived(userContext);
+
+</script> -->
+
+<h1 class="dashboard-header">Name</h1>
+<!-- {#each allBooks as book}
+<ul>
+  <li>
+    Name
+    {book.title}
+  </li>
+</ul>
+
+{/each} -->
+
 <style>
   .dashboard-header {
     display: flex;
