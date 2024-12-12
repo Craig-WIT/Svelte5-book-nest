@@ -1,16 +1,16 @@
-<!-- <script lang="ts">
+<script lang="ts">
   import { getUserState } from "$lib/state/user-state.svelte";
 
   let userContext = getUserState();
 
-  console.log("This is userContext" + JSON.stringify(userContext))
+  console.log("This is userContext" + JSON.stringify(userContext.session))
 
   let { allBooks} = $derived(userContext);
 
-</script> -->
+</script>
 
 <h1 class="dashboard-header">Name</h1>
-<!-- {#each allBooks as book}
+{#each allBooks as book}
 <ul>
   <li>
     Name
@@ -18,7 +18,7 @@
   </li>
 </ul>
 
-{/each} -->
+{/each}
 
 <style>
   .dashboard-header {

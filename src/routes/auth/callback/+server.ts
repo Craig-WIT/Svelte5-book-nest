@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase }}) => {
             }
         }
         
-        throw redirect(303, "/private/dashboard")
+        throw redirect(303, "/private/dashboard/")
     }
 
     return new Response("Session data not found", {status:400})
