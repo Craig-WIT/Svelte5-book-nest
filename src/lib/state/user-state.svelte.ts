@@ -28,6 +28,7 @@ export class UserState {
     supabase = $state<SupabaseClient<Database> | null>(null);
     user = $state<User | null>(null);
     allBooks = $state<Book[]>([]);
+    userName = $state<string | null>(null)
 
     constructor(data:UserStateProps) {
         this.updateState(data) 
@@ -47,20 +48,19 @@ export class UserState {
 
         const userId = this.user.id;
 
-        const { data,error } =  await this.supabase
-        .from("books")
-        .select("*")
-        .eq("user_id", userId)
+        const [booksResponse, userNamesResponse] = await Promise.all([
+            this.supabase.from("books").select("*").eq("user_id", userId),
+            this.supabase.from("user_names").select("name").eq("user_id", userId).single(),
+        ])    
 
-        if (error) {
-            console.log("Error fetching user books");
-            console.log(error);
+        if (booksResponse.error || !booksResponse.data || userNamesResponse.error || ! userNamesResponse.data) {
+            console.log("Error fetching data for user");
+            console.log({ booksError: booksResponse.error, userNamesError: userNamesResponse.error });
             return
         }
 
-        console.log("This is all books: " + JSON.stringify(data))
-
-        this.allBooks = data;
+        this.allBooks = booksResponse.data;
+        this.userName = userNamesResponse.data.name;
     }
 
     async logout() {
