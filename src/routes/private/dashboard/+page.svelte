@@ -1,22 +1,29 @@
 <script lang="ts">
   import { getUserState } from "$lib/state/user-state.svelte";
+  import Icon from "@iconify/svelte";
 
   let userContext = getUserState();
 
   console.log("This is userContext" + JSON.stringify(userContext.session))
 
-  let { allBooks} = $derived(userContext);
+  let { allBooks, userName} = $derived(userContext);
 
 </script>
 
-{#each allBooks as book}
-<ul>
-  <li>
-    {book.title}
-  </li>
-</ul>
-
-{/each}
+<div class="dashboard">
+  <div class="dashboard-header mb-m">
+    <a href="/private/scan-shelf" class="add-book">
+      <Icon icon="icons8:plus" width={"72"} height={"72"} />
+      <p>Add a book</p>
+    </a>
+    <div class="headline">
+      <h3 class="bold mb-xs">
+        Welcome Back, {userName}
+      </h3>
+      <p>Have you discovered any new favourites recently?</p>
+    </div>
+  </div>
+</div>
 
 <style>
   .dashboard-header {
