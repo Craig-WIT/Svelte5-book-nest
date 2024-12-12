@@ -1,3 +1,27 @@
+<script>
+  import Icon from "@iconify/svelte"
+</script>
+
+<div class="side-navigation">
+  <ul>
+    <li>
+      <a href="/private/dashboard">
+        <Icon icon="ion:library-outline" width={"40"} />
+      </a>
+    </li>
+    <li>
+      <a href="/private/scan-shelf">
+        <Icon icon="solar:eye-scan-linear" width={"40"} />
+      </a>
+    </li>
+    <li>
+      <a href="/private/settings">
+        <Icon icon="solar:settings-outline" width={"40"} />
+      </a>
+    </li>
+  </ul>
+</div>
+
 <style>
   .side-navigation {
     display: flex;

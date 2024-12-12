@@ -9,11 +9,9 @@
 
 </script>
 
-<h1 class="dashboard-header">Name</h1>
 {#each allBooks as book}
 <ul>
   <li>
-    Name
     {book.title}
   </li>
 </ul>
