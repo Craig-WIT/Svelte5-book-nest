@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BookCard } from "$components";
   import { getUserState } from "$lib/state/user-state.svelte";
   import Icon from "@iconify/svelte";
 
@@ -24,6 +25,9 @@
     </div>
   </div>
 </div>
+{#each allBooks as book}
+<BookCard {book}/>
+{/each}
 
 <style>
   .dashboard-header {

@@ -10,7 +10,7 @@
 </script>
 
 <header>
-  <a href="/">
+  <a href={user ? "/private/dashboard" : "/"}>
     <img class="logo" src={bookNestLogo} alt="Go to home">
   </a>
   <nav>
@@ -25,9 +25,6 @@
     </ul>
     {:else}
     <ul>
-      <li>
-        {userName}
-      </li>
       <li>
         <Button isMenu={true} isSecondary={true} onclick={() => userContext.logout()}>Logout</Button>
       </li>
