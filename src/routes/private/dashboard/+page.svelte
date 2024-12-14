@@ -34,13 +34,14 @@
     categoryName={"Recently added, unread books"}>
   </BookCategory>
   <BookCategory 
+    booksToDisplay={userContext.getCurrentlyReading()} 
+    categoryName={"Books you are currently reading"}>
+  </BookCategory>
+  <BookCategory 
     booksToDisplay={allBooks.slice(0,10)} 
-    categoryName={"Highest rated from your favourite genre: Fantasy"}>
+    categoryName={`Highest rated from your favourite genre: ${userContext.getFavouriteGenre()}`}>
   </BookCategory>
 </div>
-{#each allBooks as book}
-  <BookCard {book}/>
-{/each}
 
 <style>
   .dashboard-header {
