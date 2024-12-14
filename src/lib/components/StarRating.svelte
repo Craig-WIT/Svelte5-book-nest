@@ -25,7 +25,7 @@
       aria-pressed={!isReadOnly && value > i}
       onclick={() => handleRating(i + 1)}
       disabled={isReadOnly}>
-        <span class="star-icon" style="--fill: {value > i ? "gold" : "grey"}">*</span>
+        <span class="star-icon" style="--fill: {value > i ? "gold" : "grey"}">★</span>
       </button>
     {/each}
   </div>

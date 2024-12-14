@@ -25,7 +25,18 @@
       <p>Have you discovered any new favourites recently?</p>
     </div>
   </div>
-  <BookCategory booksToDisplay={allBooks.slice(0,10)} categoryName={"Favourites"}></BookCategory>
+  <BookCategory 
+  booksToDisplay={userContext.getHighestRatedBooks()} 
+  categoryName={"Your favourites books"}>
+  </BookCategory>
+  <BookCategory 
+    booksToDisplay={userContext.getUnreadBooks()} 
+    categoryName={"Recently added, unread books"}>
+  </BookCategory>
+  <BookCategory 
+    booksToDisplay={allBooks.slice(0,10)} 
+    categoryName={"Highest rated from your favourite genre: Fantasy"}>
+  </BookCategory>
 </div>
 {#each allBooks as book}
   <BookCard {book}/>
