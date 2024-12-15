@@ -12,11 +12,20 @@
 
   let {data}: bookPageProps = $props()
 
-  let book = $derived(data.book)
+  let book = $derived(data.book);
+  let isEditMode = $state(false);
+  let title = $state(book.title);
+  let author = $state(book.author);
+  let description = $state(book.description || "");
+  let genre = $state(book.genre || "");
 
   function goBack() {
     history.back();
-}
+} 
+
+  function toggleEditMode() {
+    isEditMode = !isEditMode
+  }
   
 </script>
 
@@ -51,13 +60,49 @@
   
 {/snippet}
 
+{#snippet editFields()}
+  <form>
+    <input type="text" class="input input-title mt-m mb-xs" bind:value={title} name="title" />
+    <div class="input-author">
+      <p>by</p>
+      <input type="text" class="input" name="author" bind:value={author} />
+    </div>
+    <h4 class="mt-m mb-xs semi-bold">Your rating</h4>
+    <StarRating value={book.rating || 0} isReadOnly={false}></StarRating>
+    <p class="small-font">
+      Click to {book.rating ? "change" : "give"} rating
+    </p>
+    <h4 class="mt-m mb-xs semi-bold">Description</h4>
+    <textarea name="description" bind:value={description} class="textarea mb-m" placeholder="Give a description"></textarea>
+  
+    {#if !book.finished_reading_on}
+      <Button isSecondary={true} onclick={() => console.log("Update reading status")}>
+        {book.started_reading_on ? "I finished reading this book" : "I started reading this book"}
+      </Button>
+    {/if}
+    {#if book.genre}
+      <h4 class="mt-m mb-xs semi-bold">Genre</h4>
+      <input type="text" class="input" bind:value={genre} name="genre" />
+    {/if}
+
+  </form>
+{/snippet}
+
 <div class="bookpage">
   <button onclick={goBack} aria-label="Go back">
     <Icon icon="ep:back" width={"40"} />
   </button>
   <div class="book-container">
     <div class="book-info">
-      {@render bookInfo()}
+      {#if isEditMode}
+        {@render editFields()}
+      {:else}
+        {@render bookInfo()}
+      {/if}
+      <div class="buttons-container mt-m">
+        <Button isSecondary={true} onclick={toggleEditMode}>{isEditMode ? "Save changes" : "Edit"}</Button>
+        <Button isDangerous={true} onclick={() => console.log("Toggle edit mode")}>Delete book</Button>
+      </div>
     </div>
     <div class="book-cover">
       {#if book.cover_image}
@@ -101,6 +146,19 @@
     border-radius: inherit;
   }
 
+  .book-cover .add-cover {
+  display: flex;           
+  align-items: center;     
+  justify-content: center; 
+  flex-direction: column;  
+  padding: 10px;              
+  cursor: pointer;         
+}
+
+  .book-cover .add-image-icon {
+    margin-bottom: 8px; 
+  }
+
   .input {
     padding: 8px 4px;
     width: 100%;
@@ -134,5 +192,5 @@
     border: unset !important;
     cursor: pointer;
     border-style: solid !important;
-  }
+    }
 </style>
