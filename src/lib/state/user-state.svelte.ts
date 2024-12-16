@@ -108,6 +108,10 @@ export class UserState {
         return mostCommonGenre || null;
     }
 
+    getBookById(id: number) {
+        return this.allBooks.find(book => book.id === id)
+    }
+
     async updateBook(bookId: number, updateObject: Partial<UpdateableBookFields>) {
         if(!this.supabase) {
             return
@@ -117,7 +121,7 @@ export class UserState {
 
         if(status===204 && !error) {
             this.allBooks = this.allBooks.map((book) => {
-                if(book.id ===bookId) {
+                if(book.id === bookId) {
                     return {
                         ...book,
                         ...updateObject

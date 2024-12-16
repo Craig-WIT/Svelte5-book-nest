@@ -40,6 +40,7 @@
     align-items: center;
     padding: 12px 4vw;
   }
+
   ul {
     display: flex;
     align-items: center;

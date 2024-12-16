@@ -14,19 +14,28 @@
 
   let userContext = getUserState();
 
-  let book = $derived(userContext.allBooks.find(book => book.id === data.book.id) || data.book);
+  let book = $derived(userContext.getBookById(data.book.id) || data.book);
   let isEditMode = $state(false);
-  let title = $state(book.title);
-  let author = $state(book.author);
-  let description = $state(book.description || "");
-  let genre = $state(book.genre || "");
+  let title = $state(data.book.title);
+  let author = $state(data.book.author);
+  let description = $state(data.book.description || "");
+  let genre = $state(data.book.genre || "");
 
   function goBack() {
     history.back();
 } 
 
-  function toggleEditMode() {
+  async function toggleEditModeAndSaveToDatabase() {
+    if (isEditMode) {
+      await userContext.updateBook(book.id, {
+        title, author, description, genre
+      })
+    }
     isEditMode = !isEditMode
+  }
+
+  async function updateDatabaseRating(newRating: number) {
+    await userContext.updateBook(book.id, {rating: newRating})
   }
 
   async function updateReadingStatus() {
@@ -47,7 +56,7 @@
 <h2 class="book-title mb-m">{book.title}</h2>
 <p class="book-author">by {book.author}</p>
 <h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-<StarRating value={book.rating || 0} isReadOnly={false}></StarRating>
+<StarRating value={book.rating || 0} isReadOnly={false} {updateDatabaseRating}></StarRating>
 <p class="small-font">
   Click to {book.rating ? "change" : "give"} rating
 </p>
@@ -62,7 +71,7 @@
 {/if}
 
 {#if !book.finished_reading_on}
-  <Button isSecondary={true} onclick={updateReadingStatus}>
+  <Button isSecondary={Boolean(book.started_reading_on)} onclick={updateReadingStatus}>
     {book.started_reading_on ? "I finished reading this book" : "I started reading this book"}
   </Button>
 {/if}
@@ -81,7 +90,7 @@
       <input type="text" class="input" name="author" bind:value={author} />
     </div>
     <h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-    <StarRating value={book.rating || 0} isReadOnly={false}></StarRating>
+    <StarRating value={book.rating || 0} isReadOnly={false} {updateDatabaseRating}></StarRating>
     <p class="small-font">
       Click to {book.rating ? "change" : "give"} rating
     </p>
@@ -89,7 +98,7 @@
     <textarea name="description" bind:value={description} class="textarea mb-m" placeholder="Give a description"></textarea>
   
     {#if !book.finished_reading_on}
-      <Button isSecondary={true} onclick={updateReadingStatus}>
+      <Button isSecondary={Boolean(book.started_reading_on)} onclick={updateReadingStatus}>
         {book.started_reading_on ? "I finished reading this book" : "I started reading this book"}
       </Button>
     {/if}
@@ -113,7 +122,7 @@
         {@render bookInfo()}
       {/if}
       <div class="buttons-container mt-m">
-        <Button isSecondary={true} onclick={toggleEditMode}>{isEditMode ? "Save changes" : "Edit"}</Button>
+        <Button isSecondary={true} onclick={toggleEditModeAndSaveToDatabase}>{isEditMode ? "Save changes" : "Edit"}</Button>
         <Button isDangerous={true} onclick={() => console.log("Toggle edit mode")}>Delete book</Button>
       </div>
     </div>
