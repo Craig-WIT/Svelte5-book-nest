@@ -1,7 +1,7 @@
 <script lang="ts">
   import Button from "$components/Button.svelte";
   import StarRating from "$components/StarRating.svelte";
-  import type { Book } from "$lib/state/user-state.svelte";
+  import { getUserState, type Book } from "$lib/state/user-state.svelte";
   import Icon from "@iconify/svelte";
 
   interface bookPageProps {
@@ -12,7 +12,9 @@
 
   let {data}: bookPageProps = $props()
 
-  let book = $derived(data.book);
+  let userContext = getUserState();
+
+  let book = $derived(userContext.allBooks.find(book => book.id === data.book.id) || data.book);
   let isEditMode = $state(false);
   let title = $state(book.title);
   let author = $state(book.author);
@@ -25,6 +27,17 @@
 
   function toggleEditMode() {
     isEditMode = !isEditMode
+  }
+
+  async function updateReadingStatus() {
+    const hasStartedReading = Boolean(book.started_reading_on);
+    const currentTimeStamp = new Date().toISOString();
+
+    if(!hasStartedReading) {
+      await userContext.updateBook(book.id, {started_reading_on: currentTimeStamp})
+    } else {
+      await userContext.updateBook(book.id, {finished_reading_on: currentTimeStamp})
+    }
   }
   
 </script>
@@ -49,7 +62,7 @@
 {/if}
 
 {#if !book.finished_reading_on}
-  <Button isSecondary={true} onclick={() => console.log("Update reading status")}>
+  <Button isSecondary={true} onclick={updateReadingStatus}>
     {book.started_reading_on ? "I finished reading this book" : "I started reading this book"}
   </Button>
 {/if}
@@ -76,7 +89,7 @@
     <textarea name="description" bind:value={description} class="textarea mb-m" placeholder="Give a description"></textarea>
   
     {#if !book.finished_reading_on}
-      <Button isSecondary={true} onclick={() => console.log("Update reading status")}>
+      <Button isSecondary={true} onclick={updateReadingStatus}>
         {book.started_reading_on ? "I finished reading this book" : "I started reading this book"}
       </Button>
     {/if}

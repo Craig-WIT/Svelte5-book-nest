@@ -23,6 +23,8 @@ export interface Book {
     user_id: string | null
 }
 
+type UpdateableBookFields = Omit<Book, "id" | "user_id" | "created_at">
+
 export class UserState {
     session = $state<Session | null>(null);
     supabase = $state<SupabaseClient<Database> | null>(null);
@@ -87,7 +89,7 @@ export class UserState {
             genres.forEach((genre) => {
                 const trimmedGenre = genre.trim();
                 if (trimmedGenre) {
-                    
+
                     if(!genreCounts[trimmedGenre]) {
                         genreCounts[trimmedGenre] = 1
                     
@@ -104,6 +106,27 @@ export class UserState {
             genreCounts[a] > genreCounts[b] ? a : b)
 
         return mostCommonGenre || null;
+    }
+
+    async updateBook(bookId: number, updateObject: Partial<UpdateableBookFields>) {
+        if(!this.supabase) {
+            return
+        }
+
+        const {status, error} = await this.supabase.from("books").update(updateObject).eq("id", bookId)
+
+        if(status===204 && !error) {
+            this.allBooks = this.allBooks.map((book) => {
+                if(book.id ===bookId) {
+                    return {
+                        ...book,
+                        ...updateObject
+                    }
+                } else {
+                    return book;
+                }
+            })
+        }
     }
 
     async logout() {
