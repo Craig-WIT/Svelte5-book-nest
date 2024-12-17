@@ -5,8 +5,6 @@
 
   let userContext = getUserState();
 
-  console.log("This is userContext" + JSON.stringify(userContext.session))
-
   let { allBooks, userName} = $derived(userContext);
 
 </script>

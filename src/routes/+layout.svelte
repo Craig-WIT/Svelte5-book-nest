@@ -12,12 +12,8 @@
 
     $effect(() => {
         const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
-
-        console.log("This has updated")
         
         userState.updateState({session: newSession, supabase, user: newSession?.user || null})
-        
-        console.log("This has updated")
 
         if (newSession?.expires_at !== session?.expires_at) {
         invalidate('supabase:auth')

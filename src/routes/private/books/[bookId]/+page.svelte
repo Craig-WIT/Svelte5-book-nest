@@ -58,7 +58,6 @@
     const { acceptedFiles } = e.detail;
 
     if (acceptedFiles.length) {
-      console.log("We got here")
       const file = acceptedFiles[0] as File;
       await userContext.uploadBookCover(file, book.id)
     }
@@ -147,7 +146,7 @@
       {:else}
         <Dropzone on:drop={handleDrop} multiple={false} accept="image/*" maxSize={5 * 1024 * 1024} containerClasses={"dropzone-cover"}>
           <Icon class="add-image-icon" icon="bi:camera-fill" width={"40"} />
-          <p>Add book cover</p>
+          <p>Drag a picture or click to select a file</p>
         </Dropzone>
       {/if}
     </div>
@@ -177,7 +176,7 @@
   }
 
   .book-cover img {
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
     height: 100%;
     border-radius: inherit;
