@@ -3,6 +3,7 @@
   import StarRating from "$components/StarRating.svelte";
   import { getUserState, type Book } from "$lib/state/user-state.svelte";
   import Icon from "@iconify/svelte";
+  import Dropzone from "svelte-file-dropzone";
 
   interface bookPageProps {
     data: {
@@ -130,10 +131,10 @@
       {#if book.cover_image}
         <img src={book.cover_image} alt="Book cover">
       {:else}
-        <button class="add-cover">
+        <Dropzone multiple={false} accept="image/*" maxSize={5 * 1024 * 1024} containerClasses={"dropzone-cover"}>
           <Icon class="add-image-icon" icon="bi:camera-fill" width={"40"} />
           <p>Add book cover</p>
-        </button>
+      </Dropzone>
       {/if}
     </div>
   </div>
