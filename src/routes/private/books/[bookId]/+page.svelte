@@ -35,6 +35,10 @@
     isEditMode = !isEditMode
   }
 
+  async function deleteBookFromDatabase() {
+    await userContext.deleteBookById(book.id)
+  }
+
   async function updateDatabaseRating(newRating: number) {
     await userContext.updateBook(book.id, {rating: newRating})
   }
@@ -47,6 +51,16 @@
       await userContext.updateBook(book.id, {started_reading_on: currentTimeStamp})
     } else {
       await userContext.updateBook(book.id, {finished_reading_on: currentTimeStamp})
+    }
+  }
+
+  async function handleDrop(e: CustomEvent<any>) {
+    const { acceptedFiles } = e.detail;
+
+    if (acceptedFiles.length) {
+      console.log("We got here")
+      const file = acceptedFiles[0] as File;
+      await userContext.uploadBookCover(file, book.id)
     }
   }
   
@@ -124,17 +138,17 @@
       {/if}
       <div class="buttons-container mt-m">
         <Button isSecondary={true} onclick={toggleEditModeAndSaveToDatabase}>{isEditMode ? "Save changes" : "Edit"}</Button>
-        <Button isDangerous={true} onclick={() => console.log("Toggle edit mode")}>Delete book</Button>
+        <Button isDangerous={true} onclick={deleteBookFromDatabase}>Delete book</Button>
       </div>
     </div>
     <div class="book-cover">
       {#if book.cover_image}
         <img src={book.cover_image} alt="Book cover">
       {:else}
-        <Dropzone multiple={false} accept="image/*" maxSize={5 * 1024 * 1024} containerClasses={"dropzone-cover"}>
+        <Dropzone on:drop={handleDrop} multiple={false} accept="image/*" maxSize={5 * 1024 * 1024} containerClasses={"dropzone-cover"}>
           <Icon class="add-image-icon" icon="bi:camera-fill" width={"40"} />
           <p>Add book cover</p>
-      </Dropzone>
+        </Dropzone>
       {/if}
     </div>
   </div>
