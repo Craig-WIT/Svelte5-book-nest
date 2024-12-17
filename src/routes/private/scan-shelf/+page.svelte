@@ -5,6 +5,11 @@
 
     let isLoading = $state(false)
 
+    interface OpenAIBook {
+      author: string,
+      bookTitle: string,
+    }
+
     async function handleDrop(e: CustomEvent<any>) {
       const { acceptedFiles } = e.detail;
 
@@ -12,11 +17,15 @@
         isLoading = true;
         const fileToSendToOpenAI = acceptedFiles[0];
 
-        const base64String = await convertFileToBase64(fileToSendToOpenAI);
+        const base64 = await convertFileToBase64(fileToSendToOpenAI);
         
         try {
-          const response = await fetch("/api/scan-shelf", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify( { base64: base64String }) })
+          const response = await fetch("/api/scan-shelf", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify( { base64: base64 }) })
           
+          const result = await response.json() as {bookArray: OpenAIBook[]};
+
+          console.log(result)
+
           console.log(`Response on the front end ${response}`)
           
         } catch(error) {
