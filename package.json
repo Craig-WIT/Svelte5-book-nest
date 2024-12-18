@@ -27,7 +27,9 @@
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.2",
+    "exceljs": "^4.4.0",
     "openai": "^4.77.0",
-    "svelte-file-dropzone": "^2.0.9"
+    "svelte-file-dropzone": "^2.0.9",
+    "xlsx": "^0.18.5"
   }
 }
