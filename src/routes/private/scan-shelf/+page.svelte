@@ -42,26 +42,6 @@
           errorMessage = "Could not upload given file. Are you sure it is an image with a file size of less than 10MB?"
       }
   }
-
-  async function downloadExcel() {
-        const response = await fetch('/api/generate-excel');
-
-        if (response.ok) {
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-
-            // Trigger download
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'loan_activity.xlsx';
-            link.click();
-
-            // Cleanup
-            URL.revokeObjectURL(url);
-        } else {
-            alert('Failed to download Excel file');
-        }
-    }
 </script>
 
 <h2 class="mt-m mb-l">Take a picture to add books</h2>
