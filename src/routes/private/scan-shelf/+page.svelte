@@ -3,16 +3,13 @@
     import Icon from "@iconify/svelte";
     import { convertFileToBase64 } from "$lib/utils/openai-helpers";
     import Button from "$components/Button.svelte";
+    import { getUserState, type OpenAIBook } from "$lib/state/user-state.svelte";
 
     let isLoading = $state(false);
     let errorMessage = $state("");
     let recognisedBooks = $state<OpenAIBook[]>([]);
-    let booksSuccessfullyAdded = $state(false)
-
-    interface OpenAIBook {
-      author: string,
-      bookTitle: string,
-    }
+    let booksSuccessfullyAdded = $state(false);
+    let userContext = getUserState();
 
     async function handleDrop(e: CustomEvent<any>) {
       const { acceptedFiles } = e.detail;
@@ -41,6 +38,21 @@
       } else {
           errorMessage = "Could not upload given file. Are you sure it is an image with a file size of less than 10MB?"
       }
+  }
+
+  function removeBook(index:number) {
+    recognisedBooks.splice(index, 1);
+  }
+
+  async function addAllBooks() {
+    isLoading = true;
+    try {
+      await userContext.addBooksToLibrary(recognisedBooks);
+      isLoading = false;
+      booksSuccessfullyAdded = true;
+    } catch (error: any) {
+      errorMessage = error.messsage
+    }
   }
 </script>
 
@@ -80,7 +92,7 @@
             <td>{book.bookTitle}</td>
             <td>{book.author}</td>
             <td>
-              <button type="button" aria-label="Remove book" class="remove-book" onclick={() => console.log(`Delete book with index ${i}`)}>
+              <button type="button" aria-label="Remove book" class="remove-book" onclick={() => removeBook(i)}>
                 <Icon icon="streamline:delete-1-solid" width={"20"}></Icon>
               </button>
             </td>
@@ -88,7 +100,7 @@
         {/each}
       </tbody>
     </table>
-    <Button onclick={() => console.log("Add remaining books")}>Add all books</Button>
+    <Button onclick={addAllBooks}>Add all books</Button>
   </div>
 {:else}
   <h4>The selected {recognisedBooks.length} books have been added to your library.</h4>
