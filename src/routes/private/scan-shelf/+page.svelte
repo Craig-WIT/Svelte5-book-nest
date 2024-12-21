@@ -1,46 +1,50 @@
 <script lang="ts">
-    import Dropzone from "svelte-file-dropzone";
-    import Icon from "@iconify/svelte";
-    import { convertFileToBase64 } from "$lib/utils/openai-helpers";
-    import Button from "$components/Button.svelte";
-    import { getUserState, type OpenAIBook } from "$lib/state/user-state.svelte";
+  import Dropzone from "svelte-file-dropzone";
+  import Icon from "@iconify/svelte";
+  import { convertFileToBase64 } from "$lib/utils/openai-helpers";
+  import Button from "$components/Button.svelte";
+  import { getUserState, type OpenAIBook } from "$lib/state/user-state.svelte";
 
-    let isLoading = $state(false);
-    let errorMessage = $state("");
-    let recognisedBooks = $state<OpenAIBook[]>([]);
-    let booksSuccessfullyAdded = $state(false);
-    let userContext = getUserState();
+  let isLoading = $state(false);
+  let errorMessage = $state("");
+  let recognisedBooks = $state<OpenAIBook[]>([]);
+  let booksSuccessfullyAdded = $state(false);
+  let userContext = getUserState();
 
-    async function handleDrop(e: CustomEvent<any>) {
-      const { acceptedFiles } = e.detail;
+  async function handleDrop(e: CustomEvent<any>) {
+    const { acceptedFiles } = e.detail;
 
-      if (acceptedFiles.length) {
-        isLoading = true;
-        const fileToSendToOpenAI = acceptedFiles[0];
+    if (acceptedFiles.length) {
+      isLoading = true;
+      const fileToSendToOpenAI = acceptedFiles[0];
 
-        const base64 = await convertFileToBase64(fileToSendToOpenAI);
-        
-        try {
-          const response = await fetch("/api/scan-shelf", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify( { base64: base64 }) })
-          
-          isLoading = false
+      const base64 = await convertFileToBase64(fileToSendToOpenAI);
 
-          const result = await response.json() as {bookArray: OpenAIBook[]};
-          recognisedBooks = result.bookArray;
+      try {
+        const response = await fetch("/api/scan-shelf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64: base64 }),
+        });
 
-          console.log(result)
+        isLoading = false;
 
-          console.log(`Response on the front end ${response}`)
-          
-        } catch(error) {
-          errorMessage = "Error processing the uploaded file"
-        }
-      } else {
-          errorMessage = "Could not upload given file. Are you sure it is an image with a file size of less than 10MB?"
+        const result = (await response.json()) as { bookArray: OpenAIBook[] };
+        recognisedBooks = result.bookArray;
+
+        console.log(result);
+
+        console.log(`Response on the front end ${response}`);
+      } catch (error) {
+        errorMessage = "Error processing the uploaded file";
       }
+    } else {
+      errorMessage =
+        "Could not upload given file. Are you sure it is an image with a file size of less than 10MB?";
+    }
   }
 
-  function removeBook(index:number) {
+  function removeBook(index: number) {
     recognisedBooks.splice(index, 1);
   }
 
@@ -51,31 +55,37 @@
       isLoading = false;
       booksSuccessfullyAdded = true;
     } catch (error: any) {
-      errorMessage = error.messsage
+      errorMessage = error.messsage;
     }
   }
 </script>
 
 <h2 class="mt-m mb-l">Take a picture to add books</h2>
 {#if recognisedBooks.length === 0}
-<div class="upload-area">
-  <div class="upload-container">
-    <h4 class="text-center mb-s upload-error">
-      {#if errorMessage}{errorMessage}{/if}
-    </h4>
-    {#if isLoading}
-    <div class="spinner-container">
-      <div class="spinner"></div>
-      <p>Processing your books</p>
+  <div class="upload-area">
+    <div class="upload-container">
+      <h4 class="text-center mb-s upload-error">
+        {#if errorMessage}{errorMessage}{/if}
+      </h4>
+      {#if isLoading}
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <p>Processing your books</p>
+        </div>
+      {:else}
+        <Dropzone
+          on:drop={handleDrop}
+          multiple={false}
+          accept="image/*"
+          maxSize={10 * 1024 * 1024}
+          containerClasses={"dropzone-cover"}
+        >
+          <Icon class="add-image-icon" icon="bi:camera-fill" width={"40"} />
+          <p>Drag a picture or click to select a file</p>
+        </Dropzone>
+      {/if}
     </div>
-    {:else}
-    <Dropzone on:drop={handleDrop} multiple={false} accept="image/*" maxSize={10 * 1024 * 1024} containerClasses={"dropzone-cover"}>
-      <Icon class="add-image-icon" icon="bi:camera-fill" width={"40"} />
-      <p>Drag a picture or click to select a file</p>    
-    </Dropzone>
-    {/if}
   </div>
-</div>
 {:else if !booksSuccessfullyAdded}
   <div class="found-books">
     <table class="book-list mb-m">
@@ -92,7 +102,12 @@
             <td>{book.bookTitle}</td>
             <td>{book.author}</td>
             <td>
-              <button type="button" aria-label="Remove book" class="remove-book" onclick={() => removeBook(i)}>
+              <button
+                type="button"
+                aria-label="Remove book"
+                class="remove-book"
+                onclick={() => removeBook(i)}
+              >
                 <Icon icon="streamline:delete-1-solid" width={"20"}></Icon>
               </button>
             </td>
@@ -103,7 +118,9 @@
     <Button onclick={addAllBooks}>Add all books</Button>
   </div>
 {:else}
-  <h4>The selected {recognisedBooks.length} books have been added to your library.</h4>
+  <h4>
+    The selected {recognisedBooks.length} books have been added to your library.
+  </h4>
   <Button href="/private/dashboard">Go to your library</Button>
 {/if}
 

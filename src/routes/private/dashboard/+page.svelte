@@ -5,8 +5,7 @@
 
   let userContext = getUserState();
 
-  let { allBooks, userName} = $derived(userContext);
-
+  let { allBooks, userName } = $derived(userContext);
 </script>
 
 <div class="dashboard">
@@ -22,22 +21,22 @@
       <p>Have you discovered any new favourites recently?</p>
     </div>
   </div>
-  <BookCategory 
-  booksToDisplay={userContext.getHighestRatedBooks()} 
-  categoryName={"Your favourites books"}>
-  </BookCategory>
-  <BookCategory 
-    booksToDisplay={userContext.getUnreadBooks()} 
-    categoryName={"Recently added, unread books"}>
-  </BookCategory>
-  <BookCategory 
-    booksToDisplay={userContext.getCurrentlyReading()} 
-    categoryName={"Books you are currently reading"}>
-  </BookCategory>
-  <BookCategory 
-    booksToDisplay={allBooks.slice(0,10)} 
-    categoryName={`Highest rated from your favourite genre: ${userContext.getFavouriteGenre()}`}>
-  </BookCategory>
+  <BookCategory
+    booksToDisplay={userContext.getHighestRatedBooks()}
+    categoryName={"Your favourites books"}
+  ></BookCategory>
+  <BookCategory
+    booksToDisplay={userContext.getUnreadBooks()}
+    categoryName={"Recently added, unread books"}
+  ></BookCategory>
+  <BookCategory
+    booksToDisplay={userContext.getCurrentlyReading()}
+    categoryName={"Books you are currently reading"}
+  ></BookCategory>
+  <BookCategory
+    booksToDisplay={allBooks.slice(0, 10)}
+    categoryName={`Highest rated from your favourite genre: ${userContext.getFavouriteGenre()}`}
+  ></BookCategory>
 </div>
 
 <style>
