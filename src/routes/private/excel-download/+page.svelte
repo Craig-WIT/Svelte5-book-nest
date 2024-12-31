@@ -15,9 +15,7 @@
       uploadedFiles = []; // Reset the uploaded files list
 
       const formData = new FormData();
-      acceptedFiles.forEach((file: string | Blob) =>
-        formData.append("files", file)
-      );
+      acceptedFiles.forEach((file: File) => formData.append("files", file));
 
       try {
         // Send the PDF files to the Flask backend for text extraction
@@ -33,8 +31,30 @@
         const result = await response.json();
         console.log("Backend response:", result);
 
-        // Use the response directly if it's already in the expected format
         if (result.texts) {
+          // Send extracted texts to OpenAI backend for processing
+          const openaiResponse = await fetch("/api/excel-download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ extractedTexts: result.texts }),
+          });
+
+          if (!openaiResponse.ok) {
+            throw new Error("Failed to process files with OpenAI.");
+          }
+
+          const excelFiles = await openaiResponse.json();
+          console.log("OpenAI response:", excelFiles);
+
+          // Automatically download each Excel file
+          for (const [fileName, downloadUrl] of Object.entries(excelFiles)) {
+            triggerDownload(
+              downloadUrl as string,
+              fileName.replace(/\.pdf$/, ".xlsx")
+            );
+          }
+
+          // Populate the uploaded files list with statuses
           uploadedFiles = Object.entries(result.texts).map(([name, text]) => ({
             name,
             status: text ? "Success" : "Failed",
@@ -51,6 +71,15 @@
     } else {
       errorMessage = "No valid files were dropped.";
     }
+  }
+
+  function triggerDownload(url: string, fileName: string) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName; // Ensure the file is downloaded as .xlsx
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 </script>
 
@@ -87,8 +116,7 @@
         <ul>
           {#each uploadedFiles as file, i}
             <li>
-              {i + 1} -
-              {file.name}: <strong>{file.status}</strong>
+              {i + 1} - {file.name}: <strong>{file.status}</strong>
             </li>
           {/each}
         </ul>
