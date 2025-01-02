@@ -98,7 +98,7 @@ export class UserState {
       .filter((book) => !book.started_reading_on)
       .toSorted(
         (a, z) =>
-          new Date(z.created_at).getTime() - new Date(a.created_at).getTime(),
+          new Date(z.created_at).getTime() - new Date(a.created_at).getTime()
       )
       .slice(0, 9);
   }
@@ -108,7 +108,7 @@ export class UserState {
       .filter((book) => book.started_reading_on && !book.finished_reading_on)
       .toSorted(
         (a, z) =>
-          new Date(z.created_at).getTime() - new Date(a.created_at).getTime(),
+          new Date(z.created_at).getTime() - new Date(a.created_at).getTime()
       )
       .slice(0, 9);
   }
@@ -137,7 +137,7 @@ export class UserState {
     console.log(genreCounts);
 
     const mostCommonGenre = Object.keys(genreCounts).reduce((a, b) =>
-      genreCounts[a] > genreCounts[b] ? a : b,
+      genreCounts[a] > genreCounts[b] ? a : b
     );
 
     return mostCommonGenre || null;
@@ -149,7 +149,7 @@ export class UserState {
 
   async updateBook(
     bookId: number,
-    updateObject: Partial<UpdateableBookFields>,
+    updateObject: Partial<UpdateableBookFields>
   ) {
     if (!this.supabase) {
       return;
@@ -232,6 +232,28 @@ export class UserState {
       throw new Error(error.message);
     } else {
       await this.fetchUserData();
+    }
+  }
+
+  async updateAccountData(email: string, userName: string) {
+    if (!this.session) {
+      return;
+    }
+
+    try {
+      const respone = await fetch("/api/update-account", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.session.access_token}`,
+        },
+        body: JSON.stringify({
+          email,
+          userName,
+        }),
+      });
+    } catch (error) {
+      console.log("Failed to update account details", error);
     }
   }
 
